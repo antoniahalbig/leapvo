@@ -43,25 +43,35 @@ pip install .
 ```
 
 ## Alternative Installation
-This fork additionally contains a docker setup. To run the project with docker, first build the docker:
+This fork additionally contains a docker setup. 
+There is a start script `docker/start.sh`, which runs immediately when the docker container is created/run. For a personal project, this repository has an added API, which the start script runs. If you just want to run the leapvo project normally, comment out the related line in `start.sh` or remove the script from `ENTRYPOINT` all together.
 
-```
-docker buildx build --platform=linux/amd64 -t leapvo-anaconda . --load
-```
+First some necessary setup steps: 
+- Run the following command:
+  ```
+  wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
+  ```
+- Load model variables to the leapvo repository as described in the "Demo" Section below.
 
-Afterwards you can run docker with an interactive shell:
-```
-docker run -v <your-local-project-directory>:/workspace -it leapvo-anaconda /bin/bash
-```
+When the setup steps are done you can start the docker setup:
+- To build the project run:
 
-In order to avoid rebuilding after editing project files, this command uses "-v" to bind the local project-directory. After editing a file the docker run command needs to be rerun, as well as the following command below. Please customize the run command to point to your local project folder. 
+  ```
+  docker buildx build --platform=linux/amd64 -t leapvo-anaconda . --load
+  ```
+  - Building the project will take some time due to the size of the docker image ~28GB.
 
-Every time you start the interactive shell you have to run 
-```
-pip install .
-```
+- Afterwards you can run the project with an interactive shell:
+  ```
+  docker run -v <your-local-project-directory>:/workspace -it leapvo-anaconda /bin/bash
+  ``` 
+  - In order to avoid rebuilding after editing project files, this command uses "-v" to bind the local project-directory. 
 
-After this is done, you can run the following demo below. 
+  - Every time a container is newly created it will create a wheel with `pip install .`. This code is already in the start script `docker/start.sh` and runs automatically. Creating this wheel can take up to ~250 seconds. 
+
+- If you removed the start script `docker/start.sh` you need to manually run `pip install .` in the interactive shell. 
+
+After all this is done, you can run the following demo below in the interactive shell. 
 
 ## Demos
 Our method requires an RGB video and camera intrinsics as input. We provide the model checkpoint and example data on [Google Drive](https://drive.google.com/drive/folders/1muTSIpAvm61YrSZJhOrybcvd34BZ3wK7?usp=sharing). Please download `leap_kernel.pth` and place it in the `weights` folder, and download `samples` and place them in the `data` folder.
